@@ -1,12 +1,13 @@
 import timeit
 start_time = timeit.default_timer()
+
 class problem(object):
     def __init__(self, start_state, goal_state):
         problem.start_state = start_state
         problem.goal_state = goal_state
     
+    #performs action on state and returns new state
     def result(self, state, action):
-        #conditionals that perform appropriate action on state
         for i in range(len(state)):
             if state[i] == 0:
                 if action == 'up':
@@ -30,7 +31,7 @@ class problem(object):
                     state[i] = tmp
                     return state
         
-        
+    #returns list of possible actions that can be made from current state    
     def actions(self, state):
         for i in range(len(state)):
             if state[i] == 0:
@@ -53,14 +54,14 @@ class problem(object):
                 elif i == 8:
                     return ['up', 'left']
 
-
+    #returns true if the current state is a goal state
     def goalTest(self, state):
         if state == problem.goal_state:
             return True
         else:
             return False 
         
-class Node(object):
+class node(object):
 	def __init__(self, state, parent, action, path_cost):
 		self.state = state
 		self.parent = parent
@@ -89,13 +90,14 @@ def solution(child):
             
     
 #initialise the problem
-start_state = [0,1,4,5,2,3,6,7,8]
-goal_state = [1,4,2,6,8,3,7,0,5]
+start_state = raw_input("Enter start configuration [x1,x2,...,x7,x8]: ")
+start_state = [int(s) for s in start_state.split(',')]
+goal_state = [1,2,3,4,5,6,7,8] #default goal state
 
 #initialise frontier
 problem = problem(start_state, goal_state)
-node = Node(list(problem.start_state),None,None,0)
-frontier = [node]
+start_node = node(list(problem.start_state),None,None,0)
+frontier = [start_node]
 explored = []
 goal_found = False
 
@@ -105,12 +107,11 @@ while goal_found==False:
         print("Failure")
         break
     
-    node = frontier.pop()
+    current_node = frontier.pop()
     explored.append(list(node.state))
     
-    for action in problem.actions(node.state):
-        child = childNode(problem, node, action)
-        print("From:",node.state, action, "move->", child.state)
+    for action in problem.actions(current_node.state):
+        child = childNode(problem, current_node, action)
         if list(child.state) not in explored and all(node.state != child.state for node in frontier):
             if problem.goalTest(list(child.state)):
                 print("SOLUTION FOUND")
@@ -121,4 +122,4 @@ while goal_found==False:
 
 #benchmarking
 elapsed = timeit.default_timer() - start_time
-print("Execution Time", elapsed)                             
+print("Execution Time:", elapsed)                             
