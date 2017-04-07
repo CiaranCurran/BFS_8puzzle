@@ -70,7 +70,7 @@ class node(object):
 		
 #generates a child node
 def childNode(problem, parent, action):
-    return Node(problem.result(list(parent.state), action), parent, action, 0)
+    return node(problem.result(list(parent.state), action), parent, action, 0)
 
 #prints solution to console
 def solution(child):
@@ -90,11 +90,11 @@ def solution(child):
             
     
 #initialise the problem
-start_state = raw_input("Enter start configuration [x1,x2,...,x7,x8]: ")
+start_state = input("Enter start configuration [x1,x2,...,x7,x8]: ")
 start_state = [int(s) for s in start_state.split(',')]
 goal_state = [1,2,3,4,5,6,7,8] #default goal state
 
-#initialise frontier
+
 problem = problem(start_state, goal_state)
 start_node = node(list(problem.start_state),None,None,0)
 frontier = [start_node]
@@ -107,8 +107,9 @@ while goal_found==False:
         print("Failure")
         break
     
+    #initialise frontier
     current_node = frontier.pop()
-    explored.append(list(node.state))
+    explored.append(list(current_node.state))
     
     for action in problem.actions(current_node.state):
         child = childNode(problem, current_node, action)
@@ -122,4 +123,4 @@ while goal_found==False:
 
 #benchmarking
 elapsed = timeit.default_timer() - start_time
-print("Execution Time:", elapsed)                             
+print("Execution Time:", elapsed)          
