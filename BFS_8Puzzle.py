@@ -36,13 +36,13 @@ class problem(object):
         for i in range(len(state)):
             if state[i] == 0:
                 if i == 0:
-                    return ['right', 'down']
+                    return ['down', 'right']
                 elif i == 1:
-                    return ['left', 'right', 'down']
+                    return ['down', 'left', 'right']
                 elif i == 2:
-                    return ['left', 'down']
+                    return ['down', 'left']
                 elif i == 3:
-                    return ['right', 'up', 'down']
+                    return ['up', 'down', 'right']
                 elif i == 4:
                     return ['up', 'down', 'left', 'right']
                 elif i == 5:
@@ -62,15 +62,16 @@ class problem(object):
             return False 
         
 class node(object):
-	def __init__(self, state, parent, action, path_cost):
-		self.state = state
-		self.parent = parent
-		self.action = action
-		self.path_cost = path_cost
-		
+    def __init__(self, state, parent, action, path_cost, layer):
+        self.state = state
+        self.parent = parent
+        self.action = action
+        self.path_cost = path_cost
+        self.layer = layer
+      
 #generates a child node
 def childNode(problem, parent, action):
-    return node(problem.result(list(parent.state), action), parent, action, 0)
+    return node(problem.result(list(parent.state), action), parent, action, 0, (parent.layer+1))
 
 #prints solution to console
 def solution(child):
@@ -92,27 +93,28 @@ def solution(child):
 #initialise the problem
 start_state = input("Enter start configuration [x1,x2,...,x7,x8]: ")
 start_state = [int(s) for s in start_state.split(',')]
-goal_state = [1,2,3,4,5,6,7,8] #default goal state
+#TEST start_state = [0,5,2,1,4,3,7,8,6]
+goal_state = [1,2,3,4,5,6,7,8,0] #default goal state
 
 
 problem = problem(start_state, goal_state)
-start_node = node(list(problem.start_state),None,None,0)
+start_node = node(list(problem.start_state),None,None,0,0)
 frontier = [start_node]
 explored = []
 goal_found = False
-
+layer = 0;
 #BFS ALGORITHM
 while goal_found==False:
+#for i in range(20):
     if frontier == []:
         print("Failure")
         break
-    
     #initialise frontier
-    current_node = frontier.pop()
+    current_node = frontier.pop(0)
     explored.append(list(current_node.state))
-    
     for action in problem.actions(current_node.state):
         child = childNode(problem, current_node, action)
+        #print(current_node.state, " ", action, "->", child.state)
         if list(child.state) not in explored and all(node.state != child.state for node in frontier):
             if problem.goalTest(list(child.state)):
                 print("SOLUTION FOUND")
@@ -120,7 +122,10 @@ while goal_found==False:
                 goal_found = True
                 break
             frontier.append(child)
+    if child.layer > layer:
+        print("Graph has reached layer:", layer)
+        layer = child.layer
 
 #benchmarking
 elapsed = timeit.default_timer() - start_time
-print("Execution Time:", elapsed)          
+print("Execution Time:", elapsed)                           
