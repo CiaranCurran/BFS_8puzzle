@@ -1,5 +1,4 @@
 import timeit
-start_time = timeit.default_timer()
 
 class problem(object):
     def __init__(self, start_state, goal_state):
@@ -89,9 +88,8 @@ def solution(child):
         actions.append(parent.action)
         child = parent
             
-    
-#initialise the problem
-start_state = input("Enter start configuration [x1,x2,...,x7,x8]: ")
+
+start_state = input("Enter start configuration [x1,...,x8]: ")#initialise the problem 
 start_state = [int(s) for s in start_state.split(',')]
 #TEST start_state = [0,5,2,1,4,3,7,8,6]
 goal_state = [1,2,3,4,5,6,7,8,0] #default goal state
@@ -103,29 +101,36 @@ frontier = [start_node]
 explored = []
 goal_found = False
 layer = 0;
+
+start_time = timeit.default_timer()#begin timer
+
 #BFS ALGORITHM
 while goal_found==False:
-#for i in range(20):
+   
+ 
     if frontier == []:
         print("Failure")
         break
-    #initialise frontier
-    current_node = frontier.pop(0)
-    explored.append(list(current_node.state))
+
+    current_node = frontier.pop(0)    #initialise frontier
+    explored.append(list(current_node.state))   #add the new node's state to the explored set
+    
     for action in problem.actions(current_node.state):
         child = childNode(problem, current_node, action)
-        #print(current_node.state, " ", action, "->", child.state)
+      
         if list(child.state) not in explored and all(node.state != child.state for node in frontier):
             if problem.goalTest(list(child.state)):
                 print("SOLUTION FOUND")
                 solution(child)
                 goal_found = True
                 break
+            
             frontier.append(child)
+    
     if child.layer > layer:
         print("Graph has reached layer:", layer)
         layer = child.layer
 
-#benchmarking
+#End timer || benchmarking
 elapsed = timeit.default_timer() - start_time
 print("Execution Time:", elapsed)                           
